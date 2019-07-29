@@ -45,7 +45,7 @@ save-session=/data/aria2/aria2.session
 ## RPC相关设置 ##
  
 # 启用RPC, 默认:false
-enable-rpc=true
+#enable-rpc=true
 # 允许所有来源, 默认:false
 rpc-allow-origin-all=true
 # 允许非外部访问, 默认:false
@@ -66,7 +66,7 @@ rpc-secret=xmh731017
 # 当下载的是一个种子(以.torrent结尾)时, 自动开始BT任务, 默认:true
 follow-torrent=true
 # BT监听端口, 当端口被屏蔽时使用, 默认:6881-6999
-listen-port=51413
+#listen-port=51413
 # 单个种子最大连接数, 默认:55
 #bt-max-peers=55
 # 打开DHT功能, PT需要禁用, 默认:true
@@ -85,7 +85,7 @@ enable-peer-exchange=true
 peer-id-prefix=-TR2770-
 user-agent=Transmission/2.77
 # 当种子的分享率达到这个数时, 自动停止做种, 0为一直做种, 默认:1.0
-seed-ratio=0
+#seed-ratio=0
 # 强制保存会话, 即使任务已经完成, 默认:false
 # 较新的版本开启后会在任务完成后依然保留.aria2文件
 #force-save=false
