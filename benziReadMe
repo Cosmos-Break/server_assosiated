@@ -1,0 +1,5 @@
+run Aria2_Rc_D_benzi.sh
+modify .aria/aria2c.conf -> aria2cbenzi.conf
+run downloader_benzi.sh
+
+done!
