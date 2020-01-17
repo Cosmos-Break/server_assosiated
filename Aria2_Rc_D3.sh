@@ -98,7 +98,7 @@ php7_install(){
 nginx_conf_ssl_add(){
         cat > ${nginx_conf_dir}/aria2ng.conf <<EOF
 server {
-    listen 443 ssl http2;
+    listen 443;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     server_name ${domain2};
     root /home/wwwroot/${domain2};
