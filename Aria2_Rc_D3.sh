@@ -328,7 +328,7 @@ sed -i '4i\folder='${folder}'' autoupload.sh
 mv autoupload.sh /root/.aria2/autoupload.sh
 chmod +x /root/.aria2/autoupload.sh
 wget https://raw.githubusercontent.com/chiakge/Aria2-Rclone-DirectoryLister-Aria2Ng/chiakge-patch-1/sh/rcloned
-# web="/home/wwwroot/${domain}/Cloud"
+web="/home/wwwroot/${domain}/Cloud"
 sed -i '16i\NAME='${name}'' rcloned
 sed -i '16i\REMOTE='${folder}'' rcloned
 sed -i '16i\LOCALFile='${web}'' rcloned
