@@ -104,8 +104,8 @@ server {
     root /home/wwwroot/${domain2};
     index index.html index.php;
     ssl on;
-    ssl_certificate /home/wwwroot/ssl/DirectoryLister.crt;
-    ssl_certificate_key /home/wwwroot/ssl/DirectoryLister.key;
+    ssl_certificate /home/wwwroot/ssl/aria2ng.crt;
+    ssl_certificate_key /home/wwwroot/ssl/aria2ng.key;
     ssl_session_timeout 5m;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_prefer_server_ciphers on;
@@ -274,6 +274,12 @@ rpc-allow-origin-all=true
 rpc-listen-all=true
 rpc-listen-port=6800
 
+#是否启用RPC服务的SSL/TLS加密
+rpc-secure=true
+#申请的域名crt证书文件路径，自行修改
+rpc-certificate=/home/wwwroot/ssl/aria2ng.crt
+##申请的域名key证书文件路径，自行修改
+rpc-private-key=/home/wwwroot/ssl/aria2ng.key
 
 
 follow-torrent=true
