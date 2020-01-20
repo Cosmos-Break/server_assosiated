@@ -43,6 +43,8 @@ is_root(){
         echo -e "${Error} ${RedBG} 当前用户不是root用户，请切换到root用户后重新执行脚本 ${Font}" 
         exit 1
     fi
+    stty erase '^H' && read -p "请输入你的Aria2NG域名信息(eg:dl.94ish.me):" domain2
+    stty erase '^H' && read -p "请输入你的Aria2密钥:" pass
 }
 debian_source(){
     # 添加源
@@ -68,73 +70,73 @@ basic_dependency(){
     apt update
     apt install wget unzip net-tools bc curl sudo -y     
 }
-# nginx_install(){
-#         if [ ${VERSION_ID} -eq 8 ];then
-#         debian_source
-#         fi
-#         apt update -y
-#         apt install nginx -y
-#         if [[ $? -eq 0 ]];then
-#             echo -e "${OK} ${GreenBG} nginx 安装成功 ${Font}"
-#             sleep 1
-#         else
-#             echo -e "${Error} ${RedBG} nginx 安装失败 ${Font}"
-#             exit 1
-#         fi   
-# }
-# php7_install(){
-#         apt install php7.0-cgi php7.0-fpm php7.0-curl php7.0-gd -y
-#         if [[ $? -eq 0 ]];then
-#             echo -e "${OK} ${GreenBG} php7 安装成功 ${Font}"
-#             sleep 1
-#         else
-#             echo -e "${Error} ${RedBG} php7 安装失败 ${Font}"
-#             exit 1
-#         fi  
-# }
-# nginx_conf_ssl_add(){
-#         cat > ${nginx_conf_dir}/aria2ng.conf <<EOF
-# server {
-#     listen 80;
+nginx_install(){
+        if [ ${VERSION_ID} -eq 8 ];then
+        debian_source
+        fi
+        apt update -y
+        apt install nginx -y
+        if [[ $? -eq 0 ]];then
+            echo -e "${OK} ${GreenBG} nginx 安装成功 ${Font}"
+            sleep 1
+        else
+            echo -e "${Error} ${RedBG} nginx 安装失败 ${Font}"
+            exit 1
+        fi   
+}
+php7_install(){
+        apt install php7.0-cgi php7.0-fpm php7.0-curl php7.0-gd -y
+        if [[ $? -eq 0 ]];then
+            echo -e "${OK} ${GreenBG} php7 安装成功 ${Font}"
+            sleep 1
+        else
+            echo -e "${Error} ${RedBG} php7 安装失败 ${Font}"
+            exit 1
+        fi  
+}
+nginx_conf_ssl_add(){
+        cat > ${nginx_conf_dir}/aria2ng.conf <<EOF
+server {
+    listen 80;
 
-#     server_name ${domain2};
-#     root /home/wwwroot/${domain2};
-#     index index.html index.php;        
-#     location ~ \.php$ {
-#         include snippets/fastcgi-php.conf;
-#         fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-#     }
-# }
-# EOF
-#     if [[ $? -eq 0 ]];then
-#         echo -e "${OK} ${GreenBG} nginx 配置导入成功 ${Font}"
-#         sleep 1
-#     else
-#         echo -e "${Error} ${RedBG} nginx 配置导入失败 ${Font}"
-#         exit 1
-#     fi
-# }
-# ssl_install(){
-#     apt install socat netcat -y
-#     if [[ $? -eq 0 ]];then
-#         echo -e "${OK} ${GreenBG} SSL 证书生成脚本依赖安装成功 ${Font}"
-#         sleep 2
-#     else
-#         echo -e "${Error} ${RedBG} SSL 证书生成脚本依赖安装失败 ${Font}"
-#         exit 6
-#     fi
+    server_name ${domain2};
+    root /home/wwwroot/${domain2};
+    index index.html index.php;        
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+    }
+}
+EOF
+    if [[ $? -eq 0 ]];then
+        echo -e "${OK} ${GreenBG} nginx 配置导入成功 ${Font}"
+        sleep 1
+    else
+        echo -e "${Error} ${RedBG} nginx 配置导入失败 ${Font}"
+        exit 1
+    fi
+}
+ssl_install(){
+    apt install socat netcat -y
+    if [[ $? -eq 0 ]];then
+        echo -e "${OK} ${GreenBG} SSL 证书生成脚本依赖安装成功 ${Font}"
+        sleep 2
+    else
+        echo -e "${Error} ${RedBG} SSL 证书生成脚本依赖安装失败 ${Font}"
+        exit 6
+    fi
 
-#     curl  https://get.acme.sh | sh
+    curl  https://get.acme.sh | sh
 
-#     if [[ $? -eq 0 ]];then
-#         echo -e "${OK} ${GreenBG} SSL 证书生成脚本安装成功 ${Font}"
-#         sleep 2
-#     else
-#         echo -e "${Error} ${RedBG} SSL 证书生成脚本安装失败，请检查相关依赖是否正常安装 ${Font}"
-#         exit 7
-#     fi
+    if [[ $? -eq 0 ]];then
+        echo -e "${OK} ${GreenBG} SSL 证书生成脚本安装成功 ${Font}"
+        sleep 2
+    else
+        echo -e "${Error} ${RedBG} SSL 证书生成脚本安装失败，请检查相关依赖是否正常安装 ${Font}"
+        exit 7
+    fi
 
-# }
+}
 
 port_exist_check(){
     if [[ 0 -eq `netstat -tlpn | grep "$1"| wc -l` ]];then
@@ -156,50 +158,53 @@ aria2ng_install(){
         exit 1
     fi
 }
-# domain_check(){
-#     ## ifconfig
-#     ## stty erase '^H' && read -p "请输入公网 IP 所在网卡名称(default:eth0):" broadcast
-#     ## [[ -z ${broadcast} ]] && broadcast="eth0"
-#     domain_ip=`ping ${domain2} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
-#     local_ip=`curl http://whatismyip.akamai.com`
-#     echo -e "域名dns解析IP：${domain_ip}"
-#     echo -e "本机IP: ${local_ip}"
-#     sleep 2
-#     if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
-#         echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
-#         sleep 2
-#     else
-#         echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read install
-#         case $install in
-#         [yY][eE][sS]|[yY])
-#             echo -e "${GreenBG} 继续安装 ${Font}" 
-#             sleep 2
-#             ;;
-#         *)
-#             echo -e "${RedBG} 安装终止 ${Font}" 
-#             exit 2
-#             ;;
-#         esac
-#     fi
-# }
+domain_check(){
+    ## ifconfig
+    ## stty erase '^H' && read -p "请输入公网 IP 所在网卡名称(default:eth0):" broadcast
+    ## [[ -z ${broadcast} ]] && broadcast="eth0"
+    domain_ip=`ping ${domain2} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+    local_ip=`curl http://whatismyip.akamai.com`
+    echo -e "域名dns解析IP：${domain_ip}"
+    echo -e "本机IP: ${local_ip}"
+    sleep 2
+    if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
+        echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
+        sleep 2
+    else
+        echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read install
+        case $install in
+        [yY][eE][sS]|[yY])
+            echo -e "${GreenBG} 继续安装 ${Font}" 
+            sleep 2
+            ;;
+        *)
+            echo -e "${RedBG} 安装终止 ${Font}" 
+            exit 2
+            ;;
+        esac
+    fi
+}
 standard(){
     basic_dependency
+    domain_check
+    nginx_install
+    php7_install
 	aria2ng_install
 }
-# ssl(){
+ssl(){
 
-#     service nginx stop
-#     service php7.0-fpm stop
+    service nginx stop
+    service php7.0-fpm stop
 
-#     port_exist_check 80
-#     port_exist_check 443
+    port_exist_check 80
+    port_exist_check 443
 
-#     ssl_install
-#     nginx_conf_ssl_add
+    ssl_install
+    nginx_conf_ssl_add
 
-#     service nginx start
-#     service php7.0-fpm start
-# }
+    service nginx start
+    service php7.0-fpm start
+}
 aria_install(){
 echo -e "${GreenBG} 开始安装Aria2 ${Font}"
 apt-get install build-essential cron -y
@@ -237,15 +242,15 @@ disable-ipv6=false
 input-file=/root/.aria2/aria2.session
 save-session=/root/.aria2/aria2.session
 
-enable-rpc=true
-rpc-allow-origin-all=true
-rpc-listen-all=true
-rpc-listen-port=6800
+# enable-rpc=true
+# rpc-allow-origin-all=true
+# rpc-listen-all=true
+# rpc-listen-port=6800
 
 
 
 follow-torrent=true
-listen-port=51413
+# listen-port=51413
 enable-dht=true
 enable-dht6=false
 dht-listen-port=6881-6999
@@ -312,7 +317,7 @@ main(){
     is_root
 	sleep 2
             standard
-            # ssl
+            ssl
 			aria_install
 			rclone_install
 			init_install
