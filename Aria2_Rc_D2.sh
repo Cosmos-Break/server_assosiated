@@ -241,7 +241,7 @@ max-overall-upload-limit=10K
 disable-ipv6=false
 input-file=/root/.aria2/aria2.session
 save-session=/root/.aria2/aria2.session
-
+save-session-interval=20
 enable-rpc=true
 rpc-allow-origin-all=true
 rpc-listen-all=true
